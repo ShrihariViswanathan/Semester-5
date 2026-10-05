@@ -1,0 +1,81 @@
+import random
+
+
+def print_board(board):
+    """Prints the current 3x3 board layout."""
+    print("\n")
+    for row in range(3):
+        cells = [board[row * 3 + i] for i in range(3)]
+        # Show position numbers (1-9) for open spots to guide input
+        display_cells = [
+            str(row * 3 + i + 1) if val == " " else val
+            for i, val in enumerate(cells)
+        ]
+        print(f" {display_cells[0]} | {display_cells[1]} | {display_cells[2]} ")
+        if row < 2:
+            print("---|---|---")
+    print("\n")
+
+
+def check_winner(board, player):
+    """Checks if the given player has won."""
+    win_combos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],  # Rows
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],  # Columns
+        [0, 4, 8],
+        [2, 4, 6],  # Diagonals
+    ]
+    return any(
+        all(board[index] == player for index in combo) for combo in win_combos
+    )
+
+
+def play_game():
+    board = [" "] * 9
+    print("=== TIC-TAC-TOE ===")
+    print("You are 'X' | Computer is 'O'")
+    print_board(board)
+
+    while True:
+        # --- Human Turn (X) ---
+        while True:
+            try:
+                move = int(input("Choose an open spot (1-9): ")) - 1
+                if 0 <= move <= 8 and board[move] == " ":
+                    board[move] = "X"
+                    break
+                print("Invalid move. Spot is taken or out of range.")
+            except ValueError:
+                print("Please enter a number between 1 and 9.")
+
+        print_board(board)
+
+        if check_winner(board, "X"):
+            print("You win!")
+            break
+        if " " not in board:
+            print("It's a draw!")
+            break
+
+        # --- Computer Turn (O) ---
+        print("Computer is thinking...")
+        empty_spots = [i for i, val in enumerate(board) if val == " "]
+        cpu_move = random.choice(empty_spots)
+        board[cpu_move] = "O"
+
+        print_board(board)
+
+        if check_winner(board, "O"):
+            print("Computer wins!")
+            break
+        if " " not in board:
+            print("It's a draw!")
+            break
+
+
+if __name__ == "__main__":
+    play_game()
