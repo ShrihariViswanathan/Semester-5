@@ -1,1 +1,21 @@
+loc = input("Where is the agent? (A/B): ").strip().upper()
+a = int(input("Is block A clean or dirty? (0=Clean, 1=Dirty): "))
+b = int(input("Is block B clean or dirty? (0=Clean, 1=Dirty): "))
 
+while a == 1 or b == 1:
+    if loc == 'A':
+        if a == 1:
+            print("Action: Suck dirt at A")
+            a = 0
+        else:
+            print("Action: Move Right to B")
+            loc = 'B'
+    elif loc == 'B':
+        if b == 1:
+            print("Action: Suck dirt at B")
+            b = 0
+        else:
+            print("Action: Move Left to A")
+            loc = 'A'
+
+print("Both blocks are clean!")
