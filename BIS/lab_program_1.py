@@ -1,12 +1,12 @@
 
 import random
 
-# Define fitness function
+# 1. Define the fitness function
 def fitness(x):
     return x ** 2
 
 
-# Initialize parameters
+# 2. Initialize GA parameters
 POPULATION_SIZE = 10
 GENERATIONS = 20
 MUTATION_RATE = 0.1
@@ -14,7 +14,7 @@ CROSSOVER_RATE = 0.8
 CHROMOSOME_LENGTH = 5
 
 
-# Create initial population
+# 3. Create initial population
 def create_population():
     population = []
 
@@ -28,12 +28,12 @@ def create_population():
     return population
 
 
-# Convert binary into decimal
+# Convert binary chromosome into decimal
 def decode(chromosome):
     return int(chromosome, 2)
 
 
-# Selection using tournament method
+# 4. Selection (Select the better individuals)
 def selection(population):
     selected = random.sample(population, 2)
 
@@ -43,10 +43,9 @@ def selection(population):
         return selected[1]
 
 
-# Crossover
+# 5. Crossover (Combine two parents)
 def crossover(parent1, parent2):
     if random.random() < CROSSOVER_RATE:
-
         point = random.randint(1, CHROMOSOME_LENGTH - 1)
 
         child1 = parent1[:point] + parent2[point:]
@@ -57,22 +56,21 @@ def crossover(parent1, parent2):
     return parent1, parent2
 
 
-# Mutation
+# 6. Mutation (Randomly change bits)
 def mutation(chromosome):
     chromosome = list(chromosome)
 
     for i in range(CHROMOSOME_LENGTH):
-
         if random.random() < MUTATION_RATE:
             chromosome[i] = '1' if chromosome[i] == '0' else '0'
 
     return ''.join(chromosome)
 
 
-# Main Genetic Algorithm
+# 7. Main Genetic Algorithm
 def genetic_algorithm():
 
-    random.seed(42)
+    random.seed(42)  # For reproducible results
 
     population = create_population()
 
@@ -83,7 +81,6 @@ def genetic_algorithm():
 
         # Evaluate fitness
         for chromosome in population:
-
             x = decode(chromosome)
             value = fitness(x)
 
@@ -92,19 +89,22 @@ def genetic_algorithm():
                 best_solution = chromosome
 
         print("Generation:", generation + 1,
-              "Best x:", decode(best_solution),
-              "Fitness:", best_fitness)
+              "| Best x:", decode(best_solution),
+              "| Best Fitness:", best_fitness)
 
-        # Create new population
-        new_population = [best_solution]
+        # Create next generation
+        new_population = [best_solution]  # Elitism
 
         while len(new_population) < POPULATION_SIZE:
 
+            # Selection
             parent1 = selection(population)
             parent2 = selection(population)
 
+            # Crossover
             child1, child2 = crossover(parent1, parent2)
 
+            # Mutation
             child1 = mutation(child1)
             child2 = mutation(child2)
 
@@ -115,11 +115,11 @@ def genetic_algorithm():
 
         population = new_population
 
-    print("\nFinal Best Solution")
+    print("\nFinal Best Solution:")
     print("Best Chromosome:", best_solution)
     print("Best x:", decode(best_solution))
     print("Maximum Fitness:", best_fitness)
 
 
-# Run program
+# Run the algorithm
 genetic_algorithm()
