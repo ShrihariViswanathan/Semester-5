@@ -1,7 +1,7 @@
 
 import random
 
-# Define fitness function
+# Fitness function
 def fitness(x):
     return x ** 2
 
@@ -14,41 +14,34 @@ MUTATION_RATE = 0.1
 CROSSOVER_RATE = 0.8
 
 
-# Create initial genetic population
+# Create initial population
 def create_population():
     population = []
 
     for i in range(POPULATION_SIZE):
-        genes = ''.join(
-            random.choice('01')
-            for _ in range(NUMBER_OF_GENES)
-        )
+        genes = ''.join(random.choice('01') for _ in range(NUMBER_OF_GENES))
         population.append(genes)
 
     return population
 
 
-# Gene Expression
+# Gene expression
 def gene_expression(genes):
     return int(genes, 2)
 
 
 # Selection
 def selection(population):
+    parent1, parent2 = random.sample(population, 2)
 
-    selected = random.sample(population, 2)
-
-    if fitness(gene_expression(selected[0])) > fitness(gene_expression(selected[1])):
-        return selected[0]
-    else:
-        return selected[1]
+    if fitness(gene_expression(parent1)) > fitness(gene_expression(parent2)):
+        return parent1
+    return parent2
 
 
 # Crossover
 def crossover(parent1, parent2):
-
     if random.random() < CROSSOVER_RATE:
-
         point = random.randint(1, NUMBER_OF_GENES - 1)
 
         child1 = parent1[:point] + parent2[point:]
@@ -61,22 +54,18 @@ def crossover(parent1, parent2):
 
 # Mutation
 def mutation(genes):
-
     genes = list(genes)
 
     for i in range(NUMBER_OF_GENES):
-
         if random.random() < MUTATION_RATE:
             genes[i] = '1' if genes[i] == '0' else '0'
 
     return ''.join(genes)
 
 
-# Main Gene Expression Algorithm
+# Main GEA
 def gene_expression_algorithm():
-
     random.seed(42)
-
     population = create_population()
 
     best_solution = None
@@ -84,9 +73,7 @@ def gene_expression_algorithm():
 
     for generation in range(GENERATIONS):
 
-        # Gene Expression and Fitness Evaluation
         for genes in population:
-
             x = gene_expression(genes)
             value = fitness(x)
 
@@ -99,19 +86,14 @@ def gene_expression_algorithm():
               "Best x:", gene_expression(best_solution),
               "Fitness:", best_fitness)
 
-        # Create next generation
         new_population = [best_solution]
 
         while len(new_population) < POPULATION_SIZE:
-
-            # Selection
             parent1 = selection(population)
             parent2 = selection(population)
 
-            # Crossover
             child1, child2 = crossover(parent1, parent2)
 
-            # Mutation
             child1 = mutation(child1)
             child2 = mutation(child2)
 
