@@ -1,0 +1,77 @@
+
+import random
+import math
+
+# Calculate attacking pairs
+def calculate_cost(state):
+    cost = 0
+
+    for i in range(8):
+        for j in range(i + 1, 8):
+
+            if state[i] == state[j] or abs(state[i] - state[j]) == abs(i - j):
+                cost += 1
+
+    return cost
+
+
+# Generate a random neighbour
+def get_neighbour(state):
+    new_state = state.copy()
+
+    col = random.randint(0, 7)
+    row = random.randint(0, 7)
+
+    new_state[col] = row
+
+    return new_state
+
+
+# Simulated Annealing Algorithm
+def simulated_annealing():
+
+    current = [random.randint(0, 7) for i in range(8)]
+
+    T = 100
+    cooling_rate = 0.99
+
+    while T > 0.1:
+
+        current_cost = calculate_cost(current)
+
+        print("State:", current, "Cost:", current_cost)
+
+        if current_cost == 0:
+            print("\nSolution Found!")
+            return current
+
+        next_state = get_neighbour(current)
+        next_cost = calculate_cost(next_state)
+
+        delta = current_cost - next_cost
+
+        if delta > 0:
+            current = next_state
+
+        else:
+            probability = math.exp(delta / T)
+
+            if random.random() < probability:
+                current = next_state
+
+        # Decrease temperature
+        T = T * cooling_rate
+
+    return current
+
+
+# Run the algorithm
+solution = simulated_annealing()
+
+print("\nFinal State:", solution)
+print("Final Cost:", calculate_cost(solution))
+
+if calculate_cost(solution) == 0:
+    print("8 Queens Solution Found!")
+else:
+    print("Solution Not Found. Run Again.")
