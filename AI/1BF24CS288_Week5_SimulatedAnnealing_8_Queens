@@ -2,27 +2,25 @@
 import random
 import math
 
-# Calculate attacking pairs
+# Calculate cost (number of attacking pairs)
 def calculate_cost(state):
     cost = 0
 
     for i in range(8):
         for j in range(i + 1, 8):
-
-            if state[i] == state[j] or abs(state[i] - state[j]) == abs(i - j):
+            if abs(state[i] - state[j]) == abs(i - j):
                 cost += 1
 
     return cost
 
 
-# Generate a random neighbour
+# Generate neighbour by swapping two queens
 def get_neighbour(state):
     new_state = state.copy()
 
-    col = random.randint(0, 7)
-    row = random.randint(0, 7)
+    i, j = random.sample(range(8), 2)
 
-    new_state[col] = row
+    new_state[i], new_state[j] = new_state[j], new_state[i]
 
     return new_state
 
@@ -30,48 +28,60 @@ def get_neighbour(state):
 # Simulated Annealing Algorithm
 def simulated_annealing():
 
-    current = [random.randint(0, 7) for i in range(8)]
+    for restart in range(100):
 
-    T = 100
-    cooling_rate = 0.99
+        # Random initial state
+        current = random.sample(range(8), 8)
 
-    while T > 0.1:
+        T = 10
 
-        current_cost = calculate_cost(current)
+        while T > 0.01:
 
-        print("State:", current, "Cost:", current_cost)
+            current_cost = calculate_cost(current)
 
-        if current_cost == 0:
-            print("\nSolution Found!")
-            return current
+            if current_cost == 0:
+                print("\nSolution Found!")
+                return current
 
-        next_state = get_neighbour(current)
-        next_cost = calculate_cost(next_state)
+            next_state = get_neighbour(current)
+            next_cost = calculate_cost(next_state)
 
-        delta = current_cost - next_cost
+            delta = current_cost - next_cost
 
-        if delta > 0:
-            current = next_state
-
-        else:
-            probability = math.exp(delta / T)
-
-            if random.random() < probability:
+            # Accept better state
+            if delta > 0:
                 current = next_state
 
-        # Decrease temperature
-        T = T * cooling_rate
+            # Accept worse state with probability
+            else:
+                probability = math.exp(delta / T)
 
-    return current
+                if random.random() < probability:
+                    current = next_state
+
+            # Reduce temperature
+            T = T * 0.995
+
+    return None
 
 
-# Run the algorithm
+# Main program
 solution = simulated_annealing()
 
-print("\nFinal State:", solution)
-print("Final Cost:", calculate_cost(solution))
+if solution is not None:
 
-if calculate_cost(solution) == 0:
-    print("8 Queens Solution Found!")
+    print("Final State:", solution)
+    print("Final Cost:", calculate_cost(solution))
+
+    print("\nChessboard:")
+
+    for row in range(8):
+        for col in range(8):
+            if solution[col] == row:
+                print("Q", end=" ")
+            else:
+                print(".", end=" ")
+        print()
+
 else:
-    print("Solution Not Found. Run Again.")
+    print("Solution not found. Run again.")
